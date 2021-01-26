@@ -107,3 +107,7 @@
   background-color: honeydew;
   z-index: 100;
 }
+
+.hidden {
+  display: none;
+}

@@ -4,7 +4,6 @@ const express = require('express');
 const path = require('path');
 const admin = require('firebase-admin');
 const serviceAccount = require('./rs-clone-3b0fc-firebase-adminsdk-x8au4-59b8931e06.json');
-const { auth } = require('firebase-admin');
 const app = express();
 const port = 3000;
 
@@ -20,21 +19,20 @@ let gearStatsRef = db.ref('/gearStats');
 gearStatsRef.on("value", function(snapshot) {
     gearStats = snapshot.val();
 }, function (errorObject) {
-    console.log('dsfsd' + errorObject.code);
+    console.log('Error: ' + errorObject.code);
 });
 
-let equipment = [{
-    bag: 'BagTier1',
-    cape: 'CapeTier1',
-    food: 'SandwitchTier1',
-    potion: 'PoisonTier1',
-    mount: 'HorseTier1',
-    helmet: 'HelmetTier1',
-    armor: 'HeavyArmorTier1',
-    boots: 'BootsTier1',
-    weapon: 'SwordTier1',
-    offhand: 'ShieldTier1',
-}];
+let usersList = [];
+let usersListRef = db.ref('/users');
+usersListRef.on("value", function(snapshot) {
+    usersList = snapshot.val();
+}, function (errorObject) {
+    console.log('Error: ' + errorObject.code);
+});
+
+let playerIndex = [];
+let equipment = [];
+let inventory = [];
 
 const enemyEquipment = [{
     bag: 'BagTier1',
@@ -49,17 +47,6 @@ const enemyEquipment = [{
     offhand: 'ShieldTier1',
 }]
 
-let enemyStats = [{
-    attackPower: 0,
-    health: 0,
-    armor: 0,
-    speed: 0,
-    accuracy: 0,
-    luck: 0,
-    gold: 0,
-    ruby: 0,
-}]
-
 let heroStats = [{
     attackPower: 0,
     health: 0,
@@ -71,25 +58,16 @@ let heroStats = [{
     ruby: 0,
 }]
 
-const gearStats_test = [
-    {name: 'SwordTier1', slot: 'weapon', attackPower: 10, health: 0, armor: 0, speed: 0, accuracy: 70, luck: 0},
-    {name: 'AxeTier1', slot: 'weapon', attackPower: 15, health: 0, armor: 0, speed: 0, accuracy: 60, luck: 0},
-    {name: 'HelmetTier1', slot: 'helmet', attackPower: 0, health: 10, armor: 5, speed: 0, accuracy: 0, luck: 0},
-    {name: 'HelmetTier2', slot: 'helmet', attackPower: 0, health: 10, armor: 10, speed: 0, accuracy: 0, luck: 0},
-    {name: 'BagTier1', slot: 'bag', attackPower: 0, health: 0, armor: 0, speed: 5, accuracy: 0, luck: 1},
-    {name: 'CapeTier1', slot: 'cape', attackPower: 0, health: 0, armor: 2, speed: 2, accuracy: 0, luck: 1},
-    {name: 'SandwitchTier1', slot: 'food', attackPower: 0, health: 10, armor: 0, speed: 0, accuracy: 0, luck: 0},
-    {name: 'PoisonTier1', slot: 'potion', attackPower: 5, health: 0, armor: 0, speed: 0, accuracy: 0, luck: 0},
-    {name: 'HorseTier1', slot: 'mount', attackPower: 0, health: 0, armor: 0, speed: 10, accuracy: 0, luck: 0},
-    {name: 'HeavyArmorTier1', slot: 'armor', attackPower: 0, health: 20, armor: 20, speed: 0, accuracy: 0, luck: 0},
-    {name: 'BootsTier1', slot: 'boots', attackPower: 0, health: 10, armor: 5, speed: 0, accuracy: 0, luck: 0},
-    {name: 'ShieldTier1', slot: 'offhand', attackPower: 0, health: 0, armor: 10, speed: 0, accuracy: 0, luck: 0},
-]
-
-let inventory = [
-    {name: 'AxeTier1', slot: 'weapon'},
-    {name: 'HelmetTier2', slot: 'helmet'},
-]
+let enemyStats = [{
+    attackPower: 0,
+    health: 0,
+    armor: 0,
+    speed: 0,
+    accuracy: 0,
+    luck: 0,
+    gold: 0,
+    ruby: 0,
+}]
 
 function calculateStats(equipment, stats) {
     let items = Object.values(equipment[0]);
@@ -114,6 +92,16 @@ app.get('/api/heroStats', (request, response) => {
     response.status(200).json(heroStats);
 })
 
+app.get('/api/inventory', (request, response) => {
+    response.status(200).json(inventory);
+})
+
+function loadUser(index) {
+    console.log(usersList[index]);
+    equipment = usersList[index].equipment;
+    inventory = usersList[index].inventory;
+}
+
 app.get('/api/enemy', (request, response) => {
     response.status(200).json(enemyEquipment);
 })
@@ -127,9 +115,12 @@ app.get('/api/gearStats', (request, response) => {
     response.status(200).json(gearStats);
 })
 
-app.get('/api/inventory', (request, response) => {
-    response.status(200).json(inventory);
-})
+function regearInDB() {
+    const equipmentRef = db.ref(`/users/${playerIndex}/equipment`);
+    const inventoryRef = db.ref(`/users/${playerIndex}/inventory`);
+    equipmentRef.set(equipment);
+    inventoryRef.set(inventory);
+}
 
 app.post('/api/equipment', (request, response) => {
     const slots = Object.keys(equipment[0]);
@@ -141,16 +132,38 @@ app.post('/api/equipment', (request, response) => {
     inventory.push(currentItem);
     equipment[0][slot] = inventory[inventoryIndex].name;
     inventory.splice(inventoryIndex, 1);
+    regearInDB();
     calculateStats(equipment, heroStats);
     response.status(201).json(equipment);
 })
 
+function authIngame(email, password){
+    const logins = usersList.map(user => user.login);
+    const passwords = usersList.map(user => user.password);
+    playerIndex = logins.indexOf(email);
+    let message = [0, ''];
+    if (playerIndex === -1) {
+        message = [0, 'User with this email not found'];
+    } else {
+        if (password != passwords[playerIndex]) {
+            message = [0, 'Wrong password'];
+        } else {
+            message = [1, playerIndex];
+        }
+    }
+    return message;
+}
+
 app.post('/api/user', (request, response) => {
     const email = request.body[0];
     const password = request.body[1];
-    authInDB(email, password)
-        .then(fetchToken);
-    response.status(200).json('true');
+    message = authIngame(email, password);
+    if (message[0] === 0) {
+        response.status(401).json(message[1]);
+    } else {
+        loadUser(message[1]);
+        response.status(200).json('hello');
+    }
 })
 
 function enemyRandomSelect() {

@@ -150,56 +150,61 @@ async function startRound(selectedTargets, i) {
   return roundLog;
 }
 
-function authFormSubmit(){
+async function authFormSubmit() {
   document.querySelector('.login-form-wrapper')
-    .addEventListener('submit', authFormHandler, {once: true});
+    .addEventListener('submit', authFormHandler);
 }
 
-
-async function authFormHandler(event){
+async function authFormHandler(event) {
   event.preventDefault();
   const email = document.querySelector('.email').value;
   const password = document.querySelector('.password').value;
   const loginDetails = await request('/api/user', 'POST', [email, password]);
-  console.log(loginDetails);
+  if (loginDetails !== 'User with this email not found' && loginDetails !== 'Wrong password' && loginDetails !== undefined) {
+    await updateUI();
+  }
 }
 
-window.onload = async function() {
-  authFormSubmit();
-
+async function updateUI() {
   const equipment = await loadEquipment();
   drawEquipment(equipment);
   const heroStats = await loadHeroStats();
   drawHeroStats(heroStats);
-  const gearStats = await loadGearStats();
   const inventory = await loadInventory();
   drawInventory(inventory);
   addInventoryClicks();
+  const loginScreen = document.querySelector('.login-form-wrapper');
+  loginScreen.classList.add('hidden');
+}
 
-  const enemy = await loadEnemyEquipment();
-  drawEnemy(enemy);
-  const enemyStats = await loadEnemyStats();
+window.onload = async function() {
+  const gearStats = await loadGearStats();
+  authFormSubmit();
 
-  const maxHp = [heroStats[0].health, enemyStats[0].health];
-  let hpPools = [heroStats[0].health, enemyStats[0].health];
-  let roundIndex = 0;
-  drawBattleHP(hpPools, maxHp);
+  if (false) {
+    const enemy = await loadEnemyEquipment();
+    drawEnemy(enemy);
+    const enemyStats = await loadEnemyStats();
 
-  document.querySelector('.fight').onclick = async function() {
-    const selectedDivs = [...document.querySelectorAll('.selected')];
-    const selectedTargets = selectedDivs.map(i => [...i.classList][1]);
-    if (selectedTargets[0] === undefined || selectedTargets[1] === undefined) {
-      //ошибка - выберите цели
-    } else {
-      const roundResult = await startRound(selectedTargets, roundIndex);
-      roundIndex += 1;
-      hpPools = [roundResult[2], roundResult[3]];
-      drawBattleHP(hpPools, maxHp);
+    const maxHp = [heroStats[0].health, enemyStats[0].health];
+    let hpPools = [heroStats[0].health, enemyStats[0].health];
+    let roundIndex = 0;
+    drawBattleHP(hpPools, maxHp);
+
+    document.querySelector('.fight').onclick = async function() {
+      const selectedDivs = [...document.querySelectorAll('.selected')];
+      const selectedTargets = selectedDivs.map(i => [...i.classList][1]);
+      if (selectedTargets[0] === undefined || selectedTargets[1] === undefined) {
+        //ошибка - выберите цели
+      } else {
+        const roundResult = await startRound(selectedTargets, roundIndex);
+        roundIndex += 1;
+        hpPools = [roundResult[2], roundResult[3]];
+        drawBattleHP(hpPools, maxHp);
+      }
+
     }
+    addBattleClicks('me');
+    addBattleClicks('enemy');
   }
-
-
-
-  addBattleClicks('me');
-  addBattleClicks('enemy');
 }
