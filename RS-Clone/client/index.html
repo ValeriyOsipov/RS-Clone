@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+  <title>BK Game</title>
+</head>
+<body class="body flex flex-column flex-center">
+
+  <form class="login-form-wrapper">
+    <input type="email" class="email">
+    <input type="password" class="password">
+    <input type="submit" class="submit">
+  </form>
+
+  <header class="menu flex flex-row">
+    <div class="menu-item">Character</div>
+    <div class="menu-item">Inventory</div>
+    <div class="menu-item">Shop</div>
+    <div class="menu-item">Adventure</div>
+    <div class="menu-item">Arena</div>
+    <div class="menu-item">Achievements</div>
+  </header>
+  <section class="main-content flex flex-row">
+    <div class="hero">
+      <div class="item bag"></div>
+      <div class="item cape"></div>
+      <div class="item food"></div>
+      <div class="item potion"></div>
+      <div class="item mount"></div>
+      <div class="item helmet"></div>
+      <div class="item armor"></div>
+      <div class="item boots"></div>
+      <div class="item weapon"></div>
+      <div class="item offhand"></div>
+    </div>
+    <div class="character">
+      Stats
+      <div class="attack-power">Attack power:</div>
+      <div class="health">Health: </div>
+      <div class="armor">Armor: </div>
+      <div class="speed">Speed: </div>
+      <div class="accuracy">Accuracy: </div>
+      <div class="luck">Luck: </div>
+      <br>
+      <div class="gold">Gold: </div>
+      <div class="ruby">Ruby: </div>
+    </div>
+    <div class="inventory"></div>
+    <div class="shop"></div>
+    <div class="adventure"></div>
+    <div class="arena"></div>
+    <div class="achievements"></div>
+  </section>
+  <section class="battleScreen flex flex-row">
+    <div class="me">
+      <div class="item bag"></div>
+      <div class="item cape"></div>
+      <div class="item food"></div>
+      <div class="item potion"></div>
+      <div class="item mount"></div>
+      <div class="item helmet battle"></div>
+      <div class="item armor battle"></div>
+      <div class="item boots battle"></div>
+      <div class="item weapon battle"></div>
+      <div class="item offhand battle"></div>
+    </div>
+    <div class="my-health">Health: 0/0</div>
+    <div class="enemy">
+      <div class="item bag"></div>
+      <div class="item cape"></div>
+      <div class="item food"></div>
+      <div class="item potion"></div>
+      <div class="item mount"></div>
+      <div class="item helmet battle"></div>
+      <div class="item armor battle"></div>
+      <div class="item boots battle"></div>
+      <div class="item weapon battle"></div>
+      <div class="item offhand battle"></div>
+    </div>
+    <div class="enemy-health">Health: 0/0</div>
+    <button class="fight">Fight!</button>
+    <div class="battle-log"></div>
+  </section>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.body {
+  position: relative;
+  background-color:#f6f5f1;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-row {
+  flex-direction: row;
+}
+
+.flex-column {
+  flex-direction: column;
+}
+
+.flex-center {
+  justify-content: center;
+  align-items: center;
+}
+
+.hero, .me, .enemy {
+  position: relative;
+  width: 480px;
+  height: 520px;
+  background-image: url('/assets/gear.png');
+  background-color: rgba(0,0,0,.07);
+}
+
+.hero *, .me *, .enemy * {
+  position: absolute;
+}
+
+.bag {
+  top: 7%;
+  left: 7%;
+}
+
+.cape {
+  top: 8%;
+  right: 8%;
+}
+
+.food {
+  top: 55%;
+  left: 7%;
+}
+
+.potion {
+  top: 55%;
+  right: 8%;
+}
+
+.mount {
+  top: 74%;
+  left: 39%;
+}
+
+.helmet {
+  top: 10%;
+  left: 39%;
+}
+
+.armor {
+  top: 32%;
+  left: 39%;
+}
+
+.boots {
+  top: 53%;
+  left: 39%;
+}
+
+.weapon {
+  top: 31%;
+  left: 12%;
+}
+
+.offhand {
+  top: 31%;
+  right: 12%;
+}
+
+.item {
+  height: 100px;
+  width: 100px;
+  background-color: black;
+}
+
+.selected {
+  border: 2px solid greenyellow;
+}
+
+
+.login-form-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: honeydew;
+  z-index: 100;
+}
