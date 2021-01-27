@@ -34,18 +34,7 @@ let playerIndex = [];
 let equipment = [];
 let inventory = [];
 
-const enemyEquipment = [{
-    bag: 'BagTier1',
-    cape: 'CapeTier1',
-    food: 'SandwitchTier1',
-    potion: 'PoisonTier1',
-    mount: 'HorseTier1',
-    helmet: 'HelmetTier1',
-    armor: 'HeavyArmorTier1',
-    boots: 'BootsTier1',
-    weapon: 'SwordTier1',
-    offhand: 'ShieldTier1',
-}]
+let enemyEquipment = [];
 
 let heroStats = [{
     attackPower: 0,
@@ -97,14 +86,9 @@ app.get('/api/inventory', (request, response) => {
 })
 
 function loadUser(index) {
-    console.log(usersList[index]);
     equipment = usersList[index].equipment;
     inventory = usersList[index].inventory;
 }
-
-app.get('/api/enemy', (request, response) => {
-    response.status(200).json(enemyEquipment);
-})
 
 app.get('/api/enemyStats', (request, response) => {
     calculateStats(enemyEquipment, enemyStats);
@@ -116,10 +100,17 @@ app.get('/api/gearStats', (request, response) => {
 })
 
 function regearInDB() {
+    console.log(usersList[0].inventory);
     const equipmentRef = db.ref(`/users/${playerIndex}/equipment`);
     const inventoryRef = db.ref(`/users/${playerIndex}/inventory`);
     equipmentRef.set(equipment);
     inventoryRef.set(inventory);
+    usersListRef.on("child_changed", function(snapshot) {
+        usersList = snapshot.val();
+    }, function (errorObject) {
+        console.log('Error: ' + errorObject.code);
+    });
+    console.log(usersList[0].inventory);
 }
 
 app.post('/api/equipment', (request, response) => {
@@ -166,6 +157,20 @@ app.post('/api/user', (request, response) => {
     }
 })
 
+let enemiesEquipment = [];
+const enemiesEquipmentRef = db.ref(`/enemies`);
+enemiesEquipmentRef.on("value", function(snapshot) {
+    enemiesEquipment = snapshot.val();
+}, function (errorObject) {
+    console.log('Error: ' + errorObject.code);
+});
+
+app.post('/api/enemies', (request, response) => {
+    const enemyIndex = parseInt(...request.body);
+    enemyEquipment = enemiesEquipment[enemyIndex];
+    response.status(200).json(enemyEquipment);
+})
+
 function enemyRandomSelect() {
     const targets = ['helmet', 'armor', 'boots', 'weapon', 'offhand'];
     const enemyAttack = targets[Math.floor(Math.random() * targets.length)];
@@ -191,31 +196,36 @@ function battleLogic(selectedTargets, roundIndex, maxHp) {
     if (roundIndex === 0) {
         currentBattleHP = maxHp;
     }
+    let message = 'continue';
     let enemyTargets = enemyRandomSelect();
-    let myDamage = damageCalc(selectedTargets[1], enemyTargets[0], heroStats[0], enemyStats[0]);
-    let enemyDamage = damageCalc(selectedTargets[0], enemyTargets[1], enemyStats[0], heroStats[0]);
+    let myDamage = parseInt(damageCalc(selectedTargets[1], enemyTargets[0], heroStats[0], enemyStats[0]));
+    let enemyDamage = parseInt(damageCalc(selectedTargets[0], enemyTargets[1], enemyStats[0], heroStats[0]));
     if (speedCheck()) {
         currentBattleHP[1] = currentBattleHP[1] - myDamage;
         if (currentBattleHP[1] <= 0) {
+            message = 'win';
             //battleWin();
         } else {
             currentBattleHP[0] = currentBattleHP[0] - enemyDamage;
             if (currentBattleHP[0] <= 0) {
+                message = 'battle is lost';
                 //battleLose();
             }
         }
     } else {
         currentBattleHP[0] = currentBattleHP[0] - enemyDamage;
         if (currentBattleHP[0] <= 0) {
+            message = 'battle is lost';
             //battleLose()
         } else {
             currentBattleHP[1] = currentBattleHP[1] - myDamage;
             if (currentBattleHP[1] <= 0) {
+                message = 'win';
                 //battleWin();
             }
         }
     }
-    return [myDamage, enemyDamage, currentBattleHP[0], currentBattleHP[1]];
+    return [myDamage, enemyDamage, currentBattleHP[0], currentBattleHP[1], message];
 }
 
 let currentBattleHP = [0, 0];

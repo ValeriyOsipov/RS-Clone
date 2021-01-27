@@ -88,11 +88,6 @@ async function loadHeroStats() {
   return data;
 }
 
-async function loadEnemyEquipment() {
-  const data = await request('/api/enemy');
-  return data;
-}
-
 async function loadEnemyStats() {
   const data = await request('/api/enemyStats');
   return data;
@@ -165,46 +160,72 @@ async function authFormHandler(event) {
   }
 }
 
+let equipment, heroStats, inventory;
+
 async function updateUI() {
-  const equipment = await loadEquipment();
+  equipment = await loadEquipment();
   drawEquipment(equipment);
-  const heroStats = await loadHeroStats();
+  heroStats = await loadHeroStats();
   drawHeroStats(heroStats);
-  const inventory = await loadInventory();
+  inventory = await loadInventory();
   drawInventory(inventory);
   addInventoryClicks();
   const loginScreen = document.querySelector('.login-form-wrapper');
   loginScreen.classList.add('hidden');
 }
 
+function addPveSelect() {
+  const enemies = document.querySelectorAll('.pve');
+  const enemiesArray = [...enemies];
+  for (let i = 0; i < enemiesArray.length; i += 1) {
+    enemiesArray[i].addEventListener('click', () => {
+      loadBattle(i);
+    })
+  }
+}
+
+async function selectEnemyOnServer(index) {
+  const enemy = await request('/api/enemies', 'POST', [index]);
+  return enemy;
+}
+
+async function loadBattle(enemyIndex) {
+  let enemy = await selectEnemyOnServer(enemyIndex);
+
+  drawEnemy(enemy);
+  let enemyStats = await loadEnemyStats();
+
+  const maxHp = [heroStats[0].health, enemyStats[0].health];
+  let hpPools = [heroStats[0].health, enemyStats[0].health];
+  let roundIndex = 0;
+  drawBattleHP(hpPools, maxHp);
+
+  document.querySelector('.fight').onclick = async function() {
+    const selectedDivs = [...document.querySelectorAll('.selected')];
+    const selectedTargets = selectedDivs.map(i => [...i.classList][1]);
+    if (selectedTargets[0] === undefined || selectedTargets[1] === undefined) {
+      //ошибка - выберите цели
+    } else {
+      const roundResult = await startRound(selectedTargets, roundIndex);
+      const status = roundResult[4];
+      console.log(status);
+      roundIndex += 1;
+      hpPools = [roundResult[2], roundResult[3]];
+      drawBattleHP(hpPools, maxHp);
+      if (status == 'battle is lost') {
+        window.alert('lost');
+      }
+      if (status == 'win') {
+        window.alert('win');
+      }
+    }
+  }
+  addBattleClicks('me');
+  addBattleClicks('enemy');
+}
+
 window.onload = async function() {
   const gearStats = await loadGearStats();
   authFormSubmit();
-
-  if (false) {
-    const enemy = await loadEnemyEquipment();
-    drawEnemy(enemy);
-    const enemyStats = await loadEnemyStats();
-
-    const maxHp = [heroStats[0].health, enemyStats[0].health];
-    let hpPools = [heroStats[0].health, enemyStats[0].health];
-    let roundIndex = 0;
-    drawBattleHP(hpPools, maxHp);
-
-    document.querySelector('.fight').onclick = async function() {
-      const selectedDivs = [...document.querySelectorAll('.selected')];
-      const selectedTargets = selectedDivs.map(i => [...i.classList][1]);
-      if (selectedTargets[0] === undefined || selectedTargets[1] === undefined) {
-        //ошибка - выберите цели
-      } else {
-        const roundResult = await startRound(selectedTargets, roundIndex);
-        roundIndex += 1;
-        hpPools = [roundResult[2], roundResult[3]];
-        drawBattleHP(hpPools, maxHp);
-      }
-
-    }
-    addBattleClicks('me');
-    addBattleClicks('enemy');
-  }
+  addPveSelect();
 }
