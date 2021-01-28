@@ -57,7 +57,6 @@ function drawHeroStats(data) {
   document.querySelector('.character .accuracy').innerText = `Accuracy: ${data[0].accuracy}`;
   document.querySelector('.character .luck').innerText = `Luck: ${data[0].luck}`;
   document.querySelector('.character .gold').innerText = `Gold: ${data[0].gold}`;
-  document.querySelector('.character .ruby').innerText = `Ruby: ${data[0].ruby}`;
 }
 
 function clearInventory() {
@@ -75,6 +74,35 @@ function drawInventory(data) {
     item.classList.add('item');
     item.style.backgroundImage = `url('/assets/${data[i].name}.png')`;
     inventoryWrap.appendChild(item);
+  }
+}
+
+function clearShop() {
+  const invWrap = document.querySelector('.inv-in-shop');
+  while (invWrap.firstChild) {
+    invWrap.removeChild(invWrap.lastChild);
+  }
+  const goodsWrap = document.querySelector('.goods-in-shop');
+  while (goodsWrap.firstChild) {
+    goodsWrap.removeChild(goodsWrap.lastChild);
+  }
+}
+
+function drawShop(data1, data2) {
+  clearShop();
+  const invWrap = document.querySelector('.inv-in-shop');
+  for (let i = 0; i < data1.length; i += 1) {
+    let item = document.createElement('div');
+    item.classList.add('item');
+    item.style.backgroundImage = `url('/assets/${data1[i].name}.png')`;
+    invWrap.appendChild(item);
+  }
+  const goodsWrap = document.querySelector('.goods-in-shop');
+  for (let i = 0; i < data2.length; i += 1) {
+    let item = document.createElement('div');
+    item.classList.add('item');
+    item.style.backgroundImage = `url('/assets/${data2[i].name}.png')`;
+    goodsWrap.appendChild(item);
   }
 }
 
@@ -103,6 +131,21 @@ async function loadInventory() {
   return data;
 }
 
+async function loadShop() {
+  const data = await request('/api/shop');
+  return data;
+}
+
+async function loadGold() {
+  const data = await request('/api/gold');
+  return data;
+}
+
+async function loadProgress() {
+  const data = await request('/api/progress');
+  return data;
+}
+
 async function regear(index) {
   const newEquipment = await request('/api/equipment', 'POST', [index]);
   return newEquipment;
@@ -116,10 +159,59 @@ function addInventoryClicks() {
       const equipment = await regear(i);
       drawEquipment(equipment);
       const heroStats = await loadHeroStats();
+      const gold = await loadGold();
+      heroStats[0].gold = gold;
       drawHeroStats(heroStats);
       const inventory = await loadInventory();
       drawInventory(inventory);
+      updateShopUI();
       addInventoryClicks();
+    })
+  }
+}
+
+async function buyItem(index) {
+  const newEquipment = await request('/api/shop', 'POST', [index]);
+  return newEquipment;
+}
+
+async function sellItem(index) {
+  const newEquipment = await request('/api/inventory', 'POST', [index]);
+  return newEquipment;
+}
+
+async function updateShopUI() {
+  heroStats = await loadHeroStats();
+  gold = await loadGold();
+  heroStats[0].gold = gold;
+  drawHeroStats(heroStats);
+  inventory = await loadInventory();
+  drawInventory(inventory);
+  shop = await loadShop();
+  drawShop(inventory, shop);
+  addInventoryClicks();
+  addShopClicks();
+}
+
+function addShopClicks() {
+  const invItems = document.querySelectorAll('.inv-in-shop .item');
+  const invItemsArray = [...invItems];
+  for (let i = 0; i < invItemsArray.length; i += 1) {
+    invItemsArray[i].addEventListener('click', async () => {
+      let resp = await sellItem(i);
+      inventory = resp[0];
+      shop = resp[1];
+      updateShopUI();
+    })
+  }
+  const shopItems = document.querySelectorAll('.goods-in-shop .item');
+  const shopItemsArray = [...shopItems];
+  for (let i = 0; i < shopItemsArray.length; i += 1) {
+    shopItemsArray[i].addEventListener('click', async () => {
+      let resp = await buyItem(i);
+      inventory = resp[0];
+      shop = resp[1];
+      updateShopUI();
     })
   }
 }
@@ -160,16 +252,21 @@ async function authFormHandler(event) {
   }
 }
 
-let equipment, heroStats, inventory;
+let equipment, heroStats, inventory, gold, shop, progress;
 
 async function updateUI() {
   equipment = await loadEquipment();
   drawEquipment(equipment);
   heroStats = await loadHeroStats();
+  gold = await loadGold();
+  heroStats[0].gold = gold;
   drawHeroStats(heroStats);
   inventory = await loadInventory();
+  shop = await loadShop();
   drawInventory(inventory);
+  drawShop(inventory, shop);
   addInventoryClicks();
+  addShopClicks();
   const loginScreen = document.querySelector('.login-form-wrapper');
   loginScreen.classList.add('hidden');
 }
@@ -208,14 +305,15 @@ async function loadBattle(enemyIndex) {
     } else {
       const roundResult = await startRound(selectedTargets, roundIndex);
       const status = roundResult[4];
-      console.log(status);
       roundIndex += 1;
       hpPools = [roundResult[2], roundResult[3]];
       drawBattleHP(hpPools, maxHp);
       if (status == 'battle is lost') {
+        //lose
         window.alert('lost');
       }
       if (status == 'win') {
+        //win
         window.alert('win');
       }
     }

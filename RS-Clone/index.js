@@ -33,6 +33,9 @@ usersListRef.on("value", function(snapshot) {
 let playerIndex = [];
 let equipment = [];
 let inventory = [];
+let shop = [];
+let gold = 0;
+let progress = [];
 
 let enemyEquipment = [];
 
@@ -85,9 +88,24 @@ app.get('/api/inventory', (request, response) => {
     response.status(200).json(inventory);
 })
 
+app.get('/api/shop', (request, response) => {
+    response.status(200).json(shop);
+})
+
+app.get('/api/gold', (request, response) => {
+    response.status(200).json(gold);
+})
+
+app.get('/api/progress', (request, response) => {
+    response.status(200).json(progress);
+})
+
 function loadUser(index) {
     equipment = usersList[index].equipment;
     inventory = usersList[index].inventory;
+    shop = usersList[index].shop;
+    gold = usersList[index].gold;
+    progress = usersList[index].progress;
 }
 
 app.get('/api/enemyStats', (request, response) => {
@@ -100,7 +118,6 @@ app.get('/api/gearStats', (request, response) => {
 })
 
 function regearInDB() {
-    console.log(usersList[0].inventory);
     const equipmentRef = db.ref(`/users/${playerIndex}/equipment`);
     const inventoryRef = db.ref(`/users/${playerIndex}/inventory`);
     equipmentRef.set(equipment);
@@ -110,7 +127,6 @@ function regearInDB() {
     }, function (errorObject) {
         console.log('Error: ' + errorObject.code);
     });
-    console.log(usersList[0].inventory);
 }
 
 app.post('/api/equipment', (request, response) => {
@@ -126,6 +142,46 @@ app.post('/api/equipment', (request, response) => {
     regearInDB();
     calculateStats(equipment, heroStats);
     response.status(201).json(equipment);
+})
+
+function shopInDB() {
+    const shopRef = db.ref(`/users/${playerIndex}/shop`);
+    const inventoryRef = db.ref(`/users/${playerIndex}/inventory`);
+    const goldRef = db.ref(`/users/${playerIndex}/gold`);
+    shopRef.set(shop);
+    inventoryRef.set(inventory);
+    goldRef.set(gold);
+    usersListRef.on("child_changed", function(snapshot) {
+        usersList = snapshot.val();
+    }, function (errorObject) {
+        console.log('Error: ' + errorObject.code);
+    });
+}
+
+app.post('/api/shop', (request, response) => {
+    const shopIndex = parseInt(...request.body);
+    const currentItem = shop[shopIndex];
+    const currentItemPrice = gearStats.find(item => item.name === currentItem.name).price;
+    if (currentItemPrice > gold) {
+        response.status(400).json([inventory, shop]);
+    } else {
+        inventory.push(currentItem);
+        shop.splice(shopIndex, 1);
+        gold -= currentItemPrice;
+        shopInDB();
+        response.status(201).json([inventory, shop]);
+    }
+})
+
+app.post('/api/inventory', (request, response) => {
+    const invIndex = parseInt(...request.body);
+    const currentItem = inventory[invIndex];
+    shop.push(currentItem);
+    inventory.splice(invIndex, 1);
+    const currentItemPrice = gearStats.find(item => item.name === currentItem.name).price;
+    gold += currentItemPrice/2;
+    shopInDB();
+    response.status(201).json([inventory, shop]);
 })
 
 function authIngame(email, password){
