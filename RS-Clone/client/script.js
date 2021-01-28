@@ -286,6 +286,16 @@ async function selectEnemyOnServer(index) {
   return enemy;
 }
 
+function clearBattleLog() {
+  const battleLog = document.querySelector('.battle-log');
+  battleLog.innerText = '';
+}
+
+function drawBattleLog(roundIndex, roundResult) {
+  const battleLog = document.querySelector('.battle-log');
+  battleLog.innerText += `${roundIndex}. You hit on ${roundResult[0]} damage, and take ${roundResult[1]} damage\n`;
+}
+
 async function loadBattle(enemyIndex) {
   let enemy = await selectEnemyOnServer(enemyIndex);
 
@@ -297,24 +307,32 @@ async function loadBattle(enemyIndex) {
   let roundIndex = 0;
   drawBattleHP(hpPools, maxHp);
 
-  document.querySelector('.fight').onclick = async function() {
+  const fightButton = document.querySelector('.fight');
+
+  fightButton.onclick = async function() {
     const selectedDivs = [...document.querySelectorAll('.selected')];
     const selectedTargets = selectedDivs.map(i => [...i.classList][1]);
     if (selectedTargets[0] === undefined || selectedTargets[1] === undefined) {
+      window.alert('Select defence and attack targets');
       //ошибка - выберите цели
     } else {
       const roundResult = await startRound(selectedTargets, roundIndex);
       const status = roundResult[4];
       roundIndex += 1;
+      drawBattleLog(roundIndex, roundResult);
       hpPools = [roundResult[2], roundResult[3]];
       drawBattleHP(hpPools, maxHp);
       if (status == 'battle is lost') {
         //lose
         window.alert('lost');
+        fightButton.disabled = 'disabled';
       }
       if (status == 'win') {
-        //win
+        gold = await loadGold();
+        heroStats[0].gold = gold;
+        drawHeroStats(heroStats);
         window.alert('win');
+        fightButton.disabled = 'disabled';
       }
     }
   }

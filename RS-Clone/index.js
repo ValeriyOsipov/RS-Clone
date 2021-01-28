@@ -117,16 +117,20 @@ app.get('/api/gearStats', (request, response) => {
     response.status(200).json(gearStats);
 })
 
-function regearInDB() {
-    const equipmentRef = db.ref(`/users/${playerIndex}/equipment`);
-    const inventoryRef = db.ref(`/users/${playerIndex}/inventory`);
-    equipmentRef.set(equipment);
-    inventoryRef.set(inventory);
+function updateUserList() {
     usersListRef.on("child_changed", function(snapshot) {
         usersList = snapshot.val();
     }, function (errorObject) {
         console.log('Error: ' + errorObject.code);
     });
+}
+
+function regearInDB() {
+    const equipmentRef = db.ref(`/users/${playerIndex}/equipment`);
+    const inventoryRef = db.ref(`/users/${playerIndex}/inventory`);
+    equipmentRef.set(equipment);
+    inventoryRef.set(inventory);
+    updateUserList();
 }
 
 app.post('/api/equipment', (request, response) => {
@@ -151,11 +155,7 @@ function shopInDB() {
     shopRef.set(shop);
     inventoryRef.set(inventory);
     goldRef.set(gold);
-    usersListRef.on("child_changed", function(snapshot) {
-        usersList = snapshot.val();
-    }, function (errorObject) {
-        console.log('Error: ' + errorObject.code);
-    });
+    updateUserList();
 }
 
 app.post('/api/shop', (request, response) => {
@@ -214,6 +214,7 @@ app.post('/api/user', (request, response) => {
 })
 
 let enemiesEquipment = [];
+let enemyIndex = 0;
 const enemiesEquipmentRef = db.ref(`/enemies`);
 enemiesEquipmentRef.on("value", function(snapshot) {
     enemiesEquipment = snapshot.val();
@@ -222,7 +223,7 @@ enemiesEquipmentRef.on("value", function(snapshot) {
 });
 
 app.post('/api/enemies', (request, response) => {
-    const enemyIndex = parseInt(...request.body);
+    enemyIndex = parseInt(...request.body);
     enemyEquipment = enemiesEquipment[enemyIndex];
     response.status(200).json(enemyEquipment);
 })
@@ -248,6 +249,22 @@ function speedCheck() {
     return (heroStats[0].speed >= enemyStats[0].speed);
 }
 
+function reward(index) {
+    return parseInt(index * 10 * (1 + Math.random() / 2));
+}
+
+function clearEnemy() {
+    enemyEquipment = 0;
+    enemyIndex = 0;
+}
+
+function battleWin() {
+    gold += reward(enemyIndex + 1);
+    const goldRef = db.ref(`/users/${playerIndex}/gold`);
+    goldRef.set(gold);
+    updateUserList();
+}
+
 function battleLogic(selectedTargets, roundIndex, maxHp) {
     if (roundIndex === 0) {
         currentBattleHP = maxHp;
@@ -259,25 +276,31 @@ function battleLogic(selectedTargets, roundIndex, maxHp) {
     if (speedCheck()) {
         currentBattleHP[1] = currentBattleHP[1] - myDamage;
         if (currentBattleHP[1] <= 0) {
+            enemyDamage = 0;
             message = 'win';
-            //battleWin();
+            battleWin();
+            clearEnemy();
         } else {
             currentBattleHP[0] = currentBattleHP[0] - enemyDamage;
             if (currentBattleHP[0] <= 0) {
+                myDamage = 0;
                 message = 'battle is lost';
-                //battleLose();
+                clearEnemy();
             }
         }
     } else {
         currentBattleHP[0] = currentBattleHP[0] - enemyDamage;
         if (currentBattleHP[0] <= 0) {
+            myDamage = 0;
             message = 'battle is lost';
-            //battleLose()
+            clearEnemy();
         } else {
             currentBattleHP[1] = currentBattleHP[1] - myDamage;
             if (currentBattleHP[1] <= 0) {
+                enemyDamage = 0;
                 message = 'win';
-                //battleWin();
+                battleWin();
+                clearEnemy();
             }
         }
     }
