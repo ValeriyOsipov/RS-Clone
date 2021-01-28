@@ -213,6 +213,46 @@ app.post('/api/user', (request, response) => {
     }
 })
 
+function addNewUser(email, password, name) {
+    const newUser = {
+        login: `${email}`, password: `${password}`, name: `${name}`,
+        equipment: [{bag:"BagTier1",cape:"CapeTier1",food:"SandwitchTier1",potion:"PoisonTier1",mount:"HorseTier1",helmet:"HelmetTier1",armor:"HeavyArmorTier1",boots:"BootsTier1",weapon:"SwordTier1",offhand:"ShieldTier1"}],
+        inventory: [{name:"AxeTier1",slot:"weapon"}],
+        shop: [{name:"AxeTier1",slot:"weapon"},{name:"HelmetTier2",slot:"helmet"}],
+        gold: 100,
+        progress: [0, 0, 0, 0]
+    }
+    usersList.push(newUser);
+    const usersListRef = db.ref(`/users`);
+    usersListRef.set(usersList);
+    updateUserList();
+}
+
+function register(email, password, name) {
+    const logins = usersList.map(user => user.login);
+    const index = logins.indexOf(email);
+    let message = '';
+    if (index === -1) {
+        addNewUser(email, password, name);
+        message = 'Player registered';
+    } else {
+        message = 'User with this email already exists';
+    }
+    return message;
+}
+
+app.post('/api/register', (request, response) => {
+    const email = request.body[0];
+    const password = request.body[1];
+    const name = request.body[2];
+    message = register(email, password, name);
+    if (message === 'User with this email already exists') {
+        response.status(400).json(message);
+    } else {
+        response.status(201).json(message);
+    }
+})
+
 let enemiesEquipment = [];
 let enemyIndex = 0;
 const enemiesEquipmentRef = db.ref(`/enemies`);

@@ -108,6 +108,16 @@
   z-index: 100;
 }
 
+.register-form-wrapper {
+  position: absolute;
+  top: 40vh;
+  left: 40vw;
+  width: 20vw;
+  height: 20vh;
+  background-color: lightgrey;
+  z-index: 200;
+}
+
 .hidden {
   display: none;
 }

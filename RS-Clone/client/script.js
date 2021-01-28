@@ -252,6 +252,22 @@ async function authFormHandler(event) {
   }
 }
 
+async function registerFormSubmit() {
+  document.querySelector('.register-form-wrapper')
+    .addEventListener('submit', registerFormHandler);
+}
+
+async function registerFormHandler(event) {
+  event.preventDefault();
+  const email = document.querySelector('.reg-email').value;
+  const password = document.querySelector('.reg-password').value;
+  const name = document.querySelector('.reg-name').value;
+  const regDetails = await request('/api/register', 'POST', [email, password, name]);
+  if (regDetails !== 'User with this email already exists' && regDetails !== undefined) {
+    //обработка ошибки регистрации
+  }
+}
+
 let equipment, heroStats, inventory, gold, shop, progress;
 
 async function updateUI() {
@@ -343,5 +359,6 @@ async function loadBattle(enemyIndex) {
 window.onload = async function() {
   const gearStats = await loadGearStats();
   authFormSubmit();
+  registerFormSubmit();
   addPveSelect();
 }
