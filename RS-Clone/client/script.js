@@ -304,12 +304,12 @@ function addPveSelect() {
   const enemiesArray = [...enemies];
   for (let i = 0; i < enemiesArray.length; i += 1) {
     enemiesArray[i].addEventListener('click', () => {
-      loadBattle(i);
+      loadBattle(i, 'pve');
     })
   }
 }
 
-async function selectEnemyOnServer(index) {
+async function selectPveEnemyOnServer(index) {
   const enemy = await request('/api/enemies', 'POST', [index]);
   return enemy;
 }
@@ -324,8 +324,13 @@ function drawBattleLog(roundIndex, roundResult) {
   battleLog.innerText += `${roundIndex}. You hit on ${roundResult[0]} damage, and take ${roundResult[1]} damage\n`;
 }
 
-async function loadBattle(enemyIndex) {
-  let enemy = await selectEnemyOnServer(enemyIndex);
+async function loadBattle(enemyIndex, mode) {
+  let enemy;
+  if (mode === 'pve') {
+    enemy = await selectPveEnemyOnServer(enemyIndex);
+  } else {
+    enemy = await selectPvpEnemyOnServer(enemyIndex);
+  }
 
   drawEnemy(enemy);
   let enemyStats = await loadEnemyStats();
@@ -368,10 +373,47 @@ async function loadBattle(enemyIndex) {
   addBattleClicks('enemy');
 }
 
+function addPvpSelect() {
+  const enemies = document.querySelectorAll('.pvp');
+  const enemiesArray = [...enemies];
+  for (let i = 0; i < enemiesArray.length; i += 1) {
+    enemiesArray[i].addEventListener('click', () => {
+      loadBattle(i, 'pvp');
+    })
+  }
+}
+
+function addRivalUpdateButton() {
+  const updButton = document.querySelector('.update-pvp');
+    updButton.addEventListener('click', async () => {
+      const rival = await updateRival();
+      drawRival(rival);
+    })
+}
+
+async function selectPvpEnemyOnServer(index) {
+  const enemy = await request('/api/pvp', 'POST', [index]);
+  return enemy;
+}
+
+async function updateRival() {
+  const data = await request('/api/rival');
+  return data;
+}
+
+function drawRival(data) {
+  const rivalCont = document.querySelector('.pvp');
+  rivalCont.innerText = `${data}`;
+}
+
 window.onload = async function() {
   const gearStats = await loadGearStats();
   authFormSubmit();
   registerFormSubmit();
   updateShopGoods();
   addPveSelect();
+  addPvpSelect();
+  let rival = await updateRival();
+  drawRival(rival);
+  addRivalUpdateButton();
 }

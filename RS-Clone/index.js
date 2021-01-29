@@ -299,6 +299,15 @@ app.post('/api/enemies', (request, response) => {
     response.status(200).json(enemyEquipment);
 })
 
+let rival = '';
+let rivalIndex = 0;
+
+app.post('/api/pvp', (request, response) => {
+    enemyIndex = rivalIndex;
+    enemyEquipment = usersList[enemyIndex].equipment;
+    response.status(200).json(enemyEquipment);
+})
+
 function enemyRandomSelect() {
     const targets = ['helmet', 'armor', 'boots', 'weapon', 'offhand'];
     const enemyAttack = targets[Math.floor(Math.random() * targets.length)];
@@ -331,8 +340,11 @@ function clearEnemy() {
 
 function battleWin() {
     gold += reward(enemyIndex + 1);
+    progress[enemyIndex] += 1;
     const goldRef = db.ref(`/users/${playerIndex}/gold`);
     goldRef.set(gold);
+    const progrRef = db.ref(`/users/${playerIndex}/progress`);
+    progrRef.set(progress);
     updateUserList();
 }
 
@@ -387,6 +399,16 @@ app.post('/api/battle', (request, response) => {
 
     const battleResult = battleLogic(selectedTargets, roundIndex, maxHp);
     response.status(200).json(battleResult);
+})
+
+function getRandomRival() {
+    rivalIndex = Math.floor(Math.random() * usersList.length);
+    rival = usersList[rivalIndex].name;
+}
+
+app.get('/api/rival', (request, response) => {
+    getRandomRival();
+    response.status(200).json(rival);
 })
 
 app.use(express.static(path.resolve(__dirname, 'client')))
