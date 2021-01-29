@@ -59,6 +59,79 @@ function drawHeroStats(data) {
   document.querySelector('.character .gold').innerText = `Gold: ${data[0].gold}`;
 }
 
+const itemStats = document.querySelector('.item-stats');
+
+function getPosition(e){
+	let x = 0;
+  let y = 0;
+	if (!e) {
+		var e = window.event;
+	}
+	if (e.pageX || e.pageY){
+		x = e.pageX;
+		y = e.pageY;
+	} else if (e.clientX || e.clientY){
+		x = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+		y = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+	}
+	return {x: x, y: y}
+}
+
+function setStatsPosition(e) {
+  let coords = getPosition(e);
+  itemStats.style.top = `${coords.y + 3}px`;
+  itemStats.style.left = `${coords.x + 3}px`;
+}
+
+async function getSelectedItem(itemName) {
+  return await gearStats.find(it => it.name === itemName);
+}
+
+async function prepareStats(item) {
+  let itemName = item.style.backgroundImage;
+  itemName = itemName.slice(13).slice(0,-6);
+  let itemDescription = '';
+  let selectedItem = await getSelectedItem(itemName);
+  itemDescription = `
+  Item: ${selectedItem.name}
+  Attack Power: ${selectedItem.attackPower}
+  Health: ${selectedItem.health}
+  Armor: ${selectedItem.armor}
+  Speed: ${selectedItem.speed}
+  Accuracy: ${selectedItem.accuracy}
+  Luck: ${selectedItem.luck}
+  Price: ${selectedItem.price}
+  `
+  return itemDescription;
+}
+
+async function showItemStats(item, e) {
+  item.classList.add('hovered_item');
+  itemStats.style.display = 'flex';
+  setStatsPosition(e);
+  itemStats.innerText = await prepareStats(item);
+}
+
+function hideitemStats(item) {
+  item.classList.remove('hovered_item');
+  itemStats.style.display = 'none';
+  itemStats.innerText = '';
+}
+
+function addItemsHover() {
+  let items = document.querySelectorAll('.main-content .item');
+  for (let i = 0; i < items.length; i += 1) {
+    items[i].addEventListener('mouseover', function(e){
+      e.stopPropagation();
+      showItemStats(items[i], e);
+    });
+    items[i].addEventListener('mouseout', function(e){
+      e.stopPropagation();
+      hideitemStats(items[i]);
+    });
+  }
+}
+
 function clearInventory() {
   const inventoryWrap = document.querySelector('.inventory');
   while (inventoryWrap.firstChild) {
@@ -75,6 +148,7 @@ function drawInventory(data) {
     item.style.backgroundImage = `url('/assets/${data[i].name}.png')`;
     inventoryWrap.appendChild(item);
   }
+  addItemsHover();
 }
 
 function clearShop() {
@@ -104,6 +178,7 @@ function drawShop(data1, data2) {
     item.style.backgroundImage = `url('/assets/${data2[i].name}.png')`;
     goodsWrap.appendChild(item);
   }
+  addItemsHover();
 }
 
 async function loadEquipment() {
@@ -406,8 +481,10 @@ function drawRival(data) {
   rivalCont.innerText = `${data}`;
 }
 
+let gearStats = [];
+
 window.onload = async function() {
-  const gearStats = await loadGearStats();
+  gearStats = await loadGearStats();
   authFormSubmit();
   registerFormSubmit();
   updateShopGoods();
