@@ -216,6 +216,18 @@ function addShopClicks() {
   }
 }
 
+async function updateShopGoods() {
+  document.querySelector('.update-shop').addEventListener('click', async () => {
+    const data = await request('/api/updatedshop');
+    if (data === 'Not enough gold') {
+      alert('Not enough gold');
+    } else {
+      shop = data;
+      updateShopUI();
+    }
+  });
+}
+
 function addBattleClicks(character) {
   const activeElements = document.querySelectorAll(`.${character} .battle`);
   const activeElementsArray = [...activeElements];
@@ -360,5 +372,6 @@ window.onload = async function() {
   const gearStats = await loadGearStats();
   authFormSubmit();
   registerFormSubmit();
+  updateShopGoods();
   addPveSelect();
 }

@@ -158,6 +158,37 @@ function shopInDB() {
     updateUserList();
 }
 
+function updateShop() {
+    const odds = gearStats.map(item => item.rarity);
+    let randomArray = [];
+    for (let i = 0; i < odds.length; i += 1) {
+        for (let j = 0; j < odds[i]; j += 1) {
+            randomArray.push(i);
+        }
+    }
+    let rand1 = Math.floor(Math.random() * randomArray.length);
+    let rand2 = Math.floor(Math.random() * randomArray.length);
+    let rand3 = Math.floor(Math.random() * randomArray.length);
+    let item1 = randomArray[rand1];
+    let item2 = randomArray[rand2];
+    let item3 = randomArray[rand3];
+    shop = [
+        {name:`${gearStats[item1].name}`,slot:`${gearStats[item1].slot}`},
+        {name:`${gearStats[item2].name}`,slot:`${gearStats[item2].slot}`},
+        {name:`${gearStats[item3].name}`,slot:`${gearStats[item3].slot}`}]
+}
+
+app.get('/api/updatedshop', (request, response) => {
+    if (gold >= 20) {
+        gold -= 20;
+        updateShop();
+        shopInDB();
+        response.status(200).json(shop);
+    } else {
+        response.status(400).json('Not enough gold');
+    }
+})
+
 app.post('/api/shop', (request, response) => {
     const shopIndex = parseInt(...request.body);
     const currentItem = shop[shopIndex];
