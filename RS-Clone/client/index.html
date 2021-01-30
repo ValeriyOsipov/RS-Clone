@@ -4,75 +4,94 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <link rel="stylesheet" href="style.css" />
-  <title>BK Game</title>
+  <title>RS-Clone</title>
 </head>
 <body class="body flex flex-column flex-center">
 
-  <form class="login-form-wrapper">
-    <input type="email" class="email">
-    <input type="password" class="password">
-    <input type="submit" class="submit">
+  <form class="login-form-wrapper flex flex-column flex-center">
+    <input type="email" class="email" placeholder="email">
+    <input type="password" class="password" placeholder="password">
+    <button type="submit" class="submit">Enter</button>
+    <div class="reg-link">Register here</div>
   </form>
 
-  <form class="register-form-wrapper">
-    <input type="email" class="reg-email">
-    <input type="password" class="reg-password">
-    <input type="text" class="reg-name">
-    <input type="submit" class="reg-submit">
+  <form class="register-form-wrapper flex flex-column flex-center hidden">
+    <input type="email" class="reg-email" placeholder="email">
+    <input type="password" class="reg-password" placeholder="password">
+    <input type="text" class="reg-name" placeholder="name">
+    <button type="submit" class="reg-submit">Register</button>
+    <div class="reg-info">Don't register with real email and password! Database is open for everyone.</div>
+    <div class="reg-close">x</div>
   </form>
 
-  <header class="menu flex flex-row">
-    <div class="menu-item active-menu-item">Character</div>
-    <div class="menu-item">Inventory</div>
-    <div class="menu-item">Shop</div>
-    <div class="menu-item">Adventure</div>
-    <div class="menu-item">Arena</div>
+  <header class="menu-wrapper flex flex-center">
+    <div class="menu flex flex-row">
+      <div class="menu-item flex flex-center active-menu-item">Character</div>
+      <div class="menu-item flex flex-center">Inventory</div>
+      <div class="menu-item flex flex-center">Shop</div>
+      <div class="menu-item flex flex-center">Adventure</div>
+      <div class="menu-item flex flex-center">Arena</div>
+    <div>
   </header>
-  <section class="main-content flex flex-row">
+  <section class="main-content flex flex-row flex-center">
 
     <div class="item-stats"></div>
 
-    <div class="hero">
-      <div class="item bag"></div>
-      <div class="item cape"></div>
-      <div class="item food"></div>
-      <div class="item potion"></div>
-      <div class="item mount"></div>
-      <div class="item helmet"></div>
-      <div class="item armor"></div>
-      <div class="item boots"></div>
-      <div class="item weapon"></div>
-      <div class="item offhand"></div>
+    <div class="hero-wrapper">
+      <div class="block-header"></div>
+      <div class="hero">
+        <div class="item bag"></div>
+        <div class="item cape"></div>
+        <div class="item food"></div>
+        <div class="item potion"></div>
+        <div class="item mount"></div>
+        <div class="item helmet"></div>
+        <div class="item armor"></div>
+        <div class="item boots"></div>
+        <div class="item weapon"></div>
+        <div class="item offhand"></div>
+      </div>
     </div>
 
-    <div class="character tab">
-      Stats
-      <div class="attack-power">Attack power:</div>
-      <div class="health">Health: </div>
-      <div class="armor">Armor: </div>
-      <div class="speed">Speed: </div>
-      <div class="accuracy">Accuracy: </div>
-      <div class="luck">Luck: </div>
-      <br>
-      <div class="gold">Gold: </div>
+    <div class="character tab flex flex-column">
+      <div class="block-header">Stats</div>
+      <div class="stats flex flex-column"> 
+        <div class="attack-power">Attack power:</div>
+        <div class="health">Health: </div>
+        <div class="armor">Armor: </div>
+        <div class="speed">Speed: </div>
+        <div class="accuracy">Accuracy: </div>
+        <div class="luck">Luck: </div>
+        <br>
+        <div class="gold">Gold: </div>
+      </div>
     </div>
 
-    <div class="inventory tab"></div>
+    <div class="inventory-wrapper tab hidden">
+      <div class="block-header">Click to equip</div>
+      <div class="inventory">
 
-    <div class="shop tab flex flex-column">
+      </div>
+    </div>
+
+    <div class="shop tab flex flex-column hidden">
+      <div class="block-header">Click to sell</div>
       <div class="inv-in-shop"></div>
+      <div class="block-header">Click to buy</div>
       <div class="goods-in-shop"></div>
       <button class="update-shop">Update for 20 gold</button>
     </div>
 
-    <div class="adventure tab">
+    <div class="adventure tab hidden">
+      <div class="block-header">Select mission</div>
       <div class="pve-1 pve"></div>
       <div class="pve-2 pve"></div>
       <div class="pve-3 pve"></div>
       <div class="pve-4 pve"></div>
     </div>
 
-    <div class="arena tab">
+    <div class="arena tab hidden">
+      <div class="block-header">PvP</div>
       <div class="pvp"></div>
       <button class="update-pvp">New rival</button>
     </div>

@@ -33,6 +33,21 @@
   background-color: rgba(0,0,0,.07);
 }
 
+.tab {
+  width: 480px;
+  height: 560px;
+  background-color: rgba(0,0,0,.07);
+}
+
+.block-header {
+  width: 480px;
+  height: 40px;
+  background-color: #531405;
+  color: #d7cecc;
+  text-align: center;
+  font-size: 30px;
+}
+
 .hero *, .me *, .enemy * {
   position: absolute;
 }
@@ -90,7 +105,9 @@
 .item {
   height: 100px;
   width: 100px;
-  background-color: black;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 120px 120px;
 }
 
 .selected {
@@ -104,7 +121,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: honeydew;
+  background: url('/assets/loginscreen.png') no-repeat center;
   z-index: 100;
 }
 
@@ -114,8 +131,26 @@
   left: 40vw;
   width: 20vw;
   height: 20vh;
-  background-color: lightgrey;
+  background-color: hsla(50,8%,72%);
   z-index: 200;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.reg-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 100px;
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.reg-link {
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .hidden {
@@ -146,4 +181,52 @@
   width: 100px;
   height: 100px;
   background-color: yellow;
+}
+
+.email, .password, .submit, .reg-email, .reg-password, .reg-submit, .reg-name {
+  margin-bottom: 5px;
+  width: 12vw;
+}
+
+.menu-wrapper {
+  height: 10vh;
+  width: 100vw;
+  background-color: #531405;
+  color: #d7cecc;
+}
+
+.menu {
+  width: 60vw;
+}
+
+.menu-item {
+  height: 10vh;
+  width: 10vw;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.active-menu-item, .menu-item:hover {
+  background-color: #c63000;
+  color: #ffdfbc;
+}
+
+.main-content {
+  height: 90vh;
+  width: 100vw;
+}
+
+.hero-wrapper {
+  margin-right: 5vw;
+}
+
+.character {
+  font-size: 20px;
+}
+
+.stats {
+  height: 50%;
+  width: 50%;
+  align-self: center;
+  margin-top: 20%;
 }

@@ -240,14 +240,14 @@ app.post('/api/user', (request, response) => {
         response.status(401).json(message[1]);
     } else {
         loadUser(message[1]);
-        response.status(200).json('hello');
+        response.status(200).json(usersList[message[1]].name);
     }
 })
 
 function addNewUser(email, password, name) {
     const newUser = {
         login: `${email}`, password: `${password}`, name: `${name}`,
-        equipment: [{bag:"BagTier1",cape:"CapeTier1",food:"SandwitchTier1",potion:"PoisonTier1",mount:"HorseTier1",helmet:"HelmetTier1",armor:"HeavyArmorTier1",boots:"BootsTier1",weapon:"SwordTier1",offhand:"ShieldTier1"}],
+        equipment: [{bag:"BagTier1",cape:"CapeTier1",food:"SandwitchTier1",potion:"PoisonTier1",mount:"HorseTier1",helmet:"HelmetTier1",armor:"ArmorTier1",boots:"BootsTier1",weapon:"SwordTier1",offhand:"ShieldTier1"}],
         inventory: [{name:"AxeTier1",slot:"weapon"}],
         shop: [{name:"AxeTier1",slot:"weapon"},{name:"HelmetTier2",slot:"helmet"}],
         gold: 100,

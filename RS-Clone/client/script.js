@@ -59,6 +59,31 @@ function drawHeroStats(data) {
   document.querySelector('.character .gold').innerText = `Gold: ${data[0].gold}`;
 }
 
+function addRegisterClicks() {
+  const regLink = document.querySelector('.reg-link');
+  const regForm = document.querySelector('.register-form-wrapper');
+  const regClose = document.querySelector('.reg-close');
+  regLink.addEventListener('click', () => {
+    regForm.classList.remove('hidden');
+  })
+  regClose.addEventListener('click', () => {
+    regForm.classList.add('hidden');
+  })
+}
+
+function addMenuClicks() {
+  const menuItems = [...document.querySelectorAll('.menu-item')];
+  const tabs = [...document.querySelectorAll('.tab')];
+  for (let i = 0; i < menuItems.length; i += 1) {
+    menuItems[i].addEventListener('click', () => {
+      tabs.forEach(tab => tab.classList.add('hidden'));
+      menuItems.forEach(item => item.classList.remove('active-menu-item'));
+      tabs[i].classList.remove('hidden');
+      menuItems[i].classList.add('active-menu-item');
+    })
+  }
+}
+
 const itemStats = document.querySelector('.item-stats');
 
 function getPosition(e){
@@ -335,7 +360,7 @@ async function authFormHandler(event) {
   const password = document.querySelector('.password').value;
   const loginDetails = await request('/api/user', 'POST', [email, password]);
   if (loginDetails !== 'User with this email not found' && loginDetails !== 'Wrong password' && loginDetails !== undefined) {
-    await updateUI();
+    await updateUI(loginDetails);
   }
 }
 
@@ -351,13 +376,17 @@ async function registerFormHandler(event) {
   const name = document.querySelector('.reg-name').value;
   const regDetails = await request('/api/register', 'POST', [email, password, name]);
   if (regDetails !== 'User with this email already exists' && regDetails !== undefined) {
-    //обработка ошибки регистрации
+    alert('Account registered');
+  } else {
+    alert('User with this email already exists');
   }
 }
 
 let equipment, heroStats, inventory, gold, shop, progress;
 
-async function updateUI() {
+async function updateUI(name) {
+  const heroName = document.querySelector('.hero-wrapper .block-header');
+  heroName.innerText = name;
   equipment = await loadEquipment();
   drawEquipment(equipment);
   heroStats = await loadHeroStats();
@@ -485,8 +514,10 @@ let gearStats = [];
 
 window.onload = async function() {
   gearStats = await loadGearStats();
+  addRegisterClicks();
   authFormSubmit();
   registerFormSubmit();
+  addMenuClicks();
   updateShopGoods();
   addPveSelect();
   addPvpSelect();
