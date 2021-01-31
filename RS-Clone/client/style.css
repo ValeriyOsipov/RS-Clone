@@ -157,20 +157,6 @@
   display: none;
 }
 
-.pve {
-  width: 50px;
-  height: 50px;
-  border-radius: 100%;
-  background-color: red;
-}
-
-.pvp {
-  width: 50px;
-  height: 50px;
-  border-radius: 100%;
-  background-color:blue;
-}
-
 .inv-in-shop {
   margin-bottom: 10px;
 }
@@ -229,4 +215,112 @@
   width: 50%;
   align-self: center;
   margin-top: 20%;
+}
+
+.inventory, .inv-in-shop, .goods-in-shop {
+  padding: 10px;
+  flex-wrap: wrap;
+}
+
+.inventory .item, .shop .item {
+  margin: 5px;
+}
+
+.shop {
+  position: relative;
+}
+
+.gold-wrapper {
+  position: absolute;
+  justify-self: flex-end;
+  justify-content: space-evenly;
+  font-size: 20px;
+  bottom: 10px;
+  left: 40px;
+}
+
+.update-shop {
+  width: 200px;
+}
+
+.shop .gold {
+  width: 200px;
+}
+
+.pve-map {
+  margin-top: 40px;
+  align-self: center;
+  position: relative;
+  height: 400px;
+  width: 400px;
+  background-image: url('/assets/map.jpg');
+  background-repeat: no-repeat;
+  background-size: 400px 400px;
+}
+
+.pve {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-size: 150px 150px;
+  background-position: center;
+}
+
+.pve-1 {
+  background-image: url('/assets/pve1.png');
+  top: 30px;
+  left: 30px;
+}
+
+.pve-2 {
+  background-image: url('/assets/pve2.png');
+  top: 60px;
+  right: 30px;
+}
+
+.pve-3 {
+  background-image: url('/assets/pve3.png');
+  bottom: 120px;
+  left: 60px;
+}
+
+.pve-4 {
+  background-image: url('/assets/pve4.png');
+  bottom: 30px;
+  right: 30px;
+}
+
+.pvp {
+  font-size: 24px;
+  margin: 100px 0 20px;
+  align-self: center;
+}
+
+.update-pvp, .pvp-fight {
+  width: 200px;
+  font-size: 20px;
+  align-self: center;
+  margin-bottom: 20px;
+}
+
+.footer {
+  height: 5vh;
+  width: 50vw;
+  justify-content: space-between;
+  align-items: center;
+  position: absolute;
+  bottom: 0;
+  left: 25vw;
+}
+
+.footer-link {
+  color: black;
+}
+
+.school-logo {
+  height: 4vh;
+  width: 5vw;
 }

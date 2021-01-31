@@ -57,6 +57,7 @@ function drawHeroStats(data) {
   document.querySelector('.character .accuracy').innerText = `Accuracy: ${data[0].accuracy}`;
   document.querySelector('.character .luck').innerText = `Luck: ${data[0].luck}`;
   document.querySelector('.character .gold').innerText = `Gold: ${data[0].gold}`;
+  document.querySelector('.shop .gold').innerText = `Gold: ${data[0].gold}`;
 }
 
 function addRegisterClicks() {
@@ -309,9 +310,13 @@ function addShopClicks() {
   for (let i = 0; i < shopItemsArray.length; i += 1) {
     shopItemsArray[i].addEventListener('click', async () => {
       let resp = await buyItem(i);
-      inventory = resp[0];
-      shop = resp[1];
-      updateShopUI();
+      if (resp === 'Not enough gold') {
+        alert('Not enough gold');
+      } else {
+        inventory = resp[0];
+        shop = resp[1];
+        updateShopUI();
+      }
     })
   }
 }
@@ -478,7 +483,7 @@ async function loadBattle(enemyIndex, mode) {
 }
 
 function addPvpSelect() {
-  const enemies = document.querySelectorAll('.pvp');
+  const enemies = document.querySelectorAll('.pvp-fight');
   const enemiesArray = [...enemies];
   for (let i = 0; i < enemiesArray.length; i += 1) {
     enemiesArray[i].addEventListener('click', () => {
@@ -507,7 +512,7 @@ async function updateRival() {
 
 function drawRival(data) {
   const rivalCont = document.querySelector('.pvp');
-  rivalCont.innerText = `${data}`;
+  rivalCont.innerText = `Your rival: ${data}`;
 }
 
 let gearStats = [];

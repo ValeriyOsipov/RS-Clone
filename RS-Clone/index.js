@@ -194,7 +194,7 @@ app.post('/api/shop', (request, response) => {
     const currentItem = shop[shopIndex];
     const currentItemPrice = gearStats.find(item => item.name === currentItem.name).price;
     if (currentItemPrice > gold) {
-        response.status(400).json([inventory, shop]);
+        response.status(400).json('Not enough gold');
     } else {
         inventory.push(currentItem);
         shop.splice(shopIndex, 1);
@@ -251,7 +251,7 @@ function addNewUser(email, password, name) {
         inventory: [{name:"AxeTier1",slot:"weapon"}],
         shop: [{name:"AxeTier1",slot:"weapon"},{name:"HelmetTier2",slot:"helmet"}],
         gold: 100,
-        progress: [0, 0, 0, 0]
+        progress: [0, 0, 0, 0, 0]
     }
     usersList.push(newUser);
     const usersListRef = db.ref(`/users`);
@@ -300,7 +300,7 @@ app.post('/api/enemies', (request, response) => {
 })
 
 let rival = '';
-let rivalIndex = 0;
+const rivalIndex = 5;
 
 app.post('/api/pvp', (request, response) => {
     enemyIndex = rivalIndex;
@@ -330,7 +330,10 @@ function speedCheck() {
 }
 
 function reward(index) {
-    return parseInt(index * 10 * (1 + Math.random() / 2));
+    if (index !== 5) {
+        return parseInt(index * 10 * (1 + Math.random() / 2));
+    }
+    return parseInt(10 * (1 + Math.random() / 2));
 }
 
 function clearEnemy() {

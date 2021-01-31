@@ -13,6 +13,12 @@
     <input type="password" class="password" placeholder="password">
     <button type="submit" class="submit">Enter</button>
     <div class="reg-link">Register here</div>
+    <div class="footer flex">
+      <a href="https://github.com/ValeriyOsipov" class="footer-link">github: ValeriyOsipov</a>
+      2021
+      <a href="https://rs.school/js/"><img src="/assets/rs_school_js.svg" alt="logo" class="school-logo"></a>
+      <a href="https://rs.school/js/" class="footer-link">rs.school</a>
+    </div>
   </form>
 
   <form class="register-form-wrapper flex flex-column flex-center hidden">
@@ -69,35 +75,41 @@
 
     <div class="inventory-wrapper tab hidden">
       <div class="block-header">Click to equip</div>
-      <div class="inventory">
+      <div class="inventory flex flex-row">
 
       </div>
     </div>
 
     <div class="shop tab flex flex-column hidden">
       <div class="block-header">Click to sell</div>
-      <div class="inv-in-shop"></div>
+      <div class="inv-in-shop flex flex-row"></div>
       <div class="block-header">Click to buy</div>
-      <div class="goods-in-shop"></div>
-      <button class="update-shop">Update for 20 gold</button>
+      <div class="goods-in-shop flex flex-row"></div>
+      <div class="gold-wrapper flex flex-row">
+        <div class="gold">Gold: </div>
+        <button class="update-shop">Update for 20 gold</button>
+      </div>
     </div>
 
-    <div class="adventure tab hidden">
+    <div class="adventure tab flex flex-column hidden">
       <div class="block-header">Select mission</div>
-      <div class="pve-1 pve"></div>
-      <div class="pve-2 pve"></div>
-      <div class="pve-3 pve"></div>
-      <div class="pve-4 pve"></div>
+      <div class="pve-map">
+        <div class="pve-1 pve"></div>
+        <div class="pve-2 pve"></div>
+        <div class="pve-3 pve"></div>
+        <div class="pve-4 pve"></div>
+      </div>
     </div>
 
-    <div class="arena tab hidden">
+    <div class="arena tab flex flex-column hidden">
       <div class="block-header">PvP</div>
       <div class="pvp"></div>
+      <button class="pvp-fight">Fight</button>
       <button class="update-pvp">New rival</button>
     </div>
     
   </section>
-  <section class="battleScreen flex flex-row">
+  <section class="battleScreen flex flex-row hidden">
     <div class="me">
       <div class="item bag"></div>
       <div class="item cape"></div>
