@@ -345,8 +345,8 @@ function addBattleClicks(character) {
 }
 
 function drawBattleHP(hpPools, maxHp) {
-  document.querySelector('.my-health').innerText = `Health: ${hpPools[0]}/ ${maxHp[0]}`;
-  document.querySelector('.enemy-health').innerText = `Health: ${hpPools[1]}/ ${maxHp[1]}`;
+  document.querySelector('.my-health').innerText = `My Health: ${hpPools[0]}/ ${maxHp[0]}`;
+  document.querySelector('.enemy-health').innerText = `Enemy Health: ${hpPools[1]}/ ${maxHp[1]}`;
 }
 
 async function startRound(selectedTargets, i) {
@@ -414,6 +414,7 @@ function addPveSelect() {
   for (let i = 0; i < enemiesArray.length; i += 1) {
     enemiesArray[i].addEventListener('click', () => {
       loadBattle(i, 'pve');
+      showBattleScreen();
     })
   }
 }
@@ -428,9 +429,22 @@ function clearBattleLog() {
   battleLog.innerText = '';
 }
 
+const battleLog = document.querySelector('.battle-log');
+
 function drawBattleLog(roundIndex, roundResult) {
-  const battleLog = document.querySelector('.battle-log');
   battleLog.innerText += `${roundIndex}. You hit on ${roundResult[0]} damage, and take ${roundResult[1]} damage\n`;
+}
+
+function showCloseButton() {
+  const closeBattle = document.querySelector('.battle-close');
+  closeBattle.classList.remove('hidden');
+  closeBattle.addEventListener('click', () => {
+    closeBattle.classList.add('hidden');
+    main.classList.remove('hidden');
+    header.classList.remove('hidden');
+    battleScreen.classList.add('hidden');
+    battleLog.innerText='';
+  });
 }
 
 async function loadBattle(enemyIndex, mode) {
@@ -450,13 +464,13 @@ async function loadBattle(enemyIndex, mode) {
   drawBattleHP(hpPools, maxHp);
 
   const fightButton = document.querySelector('.fight');
+  fightButton.removeAttribute('disabled');
 
   fightButton.onclick = async function() {
     const selectedDivs = [...document.querySelectorAll('.selected')];
     const selectedTargets = selectedDivs.map(i => [...i.classList][1]);
     if (selectedTargets[0] === undefined || selectedTargets[1] === undefined) {
       window.alert('Select defence and attack targets');
-      //ошибка - выберите цели
     } else {
       const roundResult = await startRound(selectedTargets, roundIndex);
       const status = roundResult[4];
@@ -465,21 +479,32 @@ async function loadBattle(enemyIndex, mode) {
       hpPools = [roundResult[2], roundResult[3]];
       drawBattleHP(hpPools, maxHp);
       if (status == 'battle is lost') {
-        //lose
-        window.alert('lost');
+        window.alert('Battle is lost. Try harder next time.');
         fightButton.disabled = 'disabled';
+        showCloseButton();
       }
       if (status == 'win') {
         gold = await loadGold();
         heroStats[0].gold = gold;
         drawHeroStats(heroStats);
-        window.alert('win');
+        window.alert('You win and earn some gold!');
         fightButton.disabled = 'disabled';
+        showCloseButton();
       }
     }
   }
   addBattleClicks('me');
   addBattleClicks('enemy');
+}
+
+const main = document.querySelector('.main-content');
+const header = document.querySelector('.menu-wrapper');
+const battleScreen = document.querySelector('.battle-screen');
+
+function showBattleScreen() {
+  main.classList.add('hidden');
+  header.classList.add('hidden');
+  battleScreen.classList.remove('hidden');
 }
 
 function addPvpSelect() {
@@ -488,6 +513,7 @@ function addPvpSelect() {
   for (let i = 0; i < enemiesArray.length; i += 1) {
     enemiesArray[i].addEventListener('click', () => {
       loadBattle(i, 'pvp');
+      showBattleScreen();
     })
   }
 }

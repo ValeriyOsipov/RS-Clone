@@ -109,35 +109,42 @@
     </div>
     
   </section>
-  <section class="battleScreen flex flex-row hidden">
-    <div class="me">
-      <div class="item bag"></div>
-      <div class="item cape"></div>
-      <div class="item food"></div>
-      <div class="item potion"></div>
-      <div class="item mount"></div>
-      <div class="item helmet battle"></div>
-      <div class="item armor battle"></div>
-      <div class="item boots battle"></div>
-      <div class="item weapon battle"></div>
-      <div class="item offhand battle"></div>
+  <section class="battle-screen flex flex-column flex-center hidden">
+    <div class="battle-characters flex flex-row">
+      <div class="me-wrapper flex flex-column flex-center">
+        <div class="my-health">My Health: 0/0</div>
+        <div class="me">
+          <div class="item bag"></div>
+          <div class="item cape"></div>
+          <div class="item food"></div>
+          <div class="item potion"></div>
+          <div class="item mount"></div>
+          <div class="item helmet battle"></div>
+          <div class="item armor battle"></div>
+          <div class="item boots battle"></div>
+          <div class="item weapon battle"></div>
+          <div class="item offhand battle"></div>
+        </div>
+      </div>
+      <div class="enemy-wrapper flex flex-column flex-center">
+        <div class="enemy-health">Enemy Health: 0/0</div>
+        <div class="enemy">
+          <div class="item bag"></div>
+          <div class="item cape"></div>
+          <div class="item food"></div>
+          <div class="item potion"></div>
+          <div class="item mount"></div>
+          <div class="item helmet battle"></div>
+          <div class="item armor battle"></div>
+          <div class="item boots battle"></div>
+          <div class="item weapon battle"></div>
+          <div class="item offhand battle"></div>
+        </div>
+      </div>
     </div>
-    <div class="my-health">Health: 0/0</div>
-    <div class="enemy">
-      <div class="item bag"></div>
-      <div class="item cape"></div>
-      <div class="item food"></div>
-      <div class="item potion"></div>
-      <div class="item mount"></div>
-      <div class="item helmet battle"></div>
-      <div class="item armor battle"></div>
-      <div class="item boots battle"></div>
-      <div class="item weapon battle"></div>
-      <div class="item offhand battle"></div>
-    </div>
-    <div class="enemy-health">Health: 0/0</div>
     <button class="fight">Fight!</button>
     <div class="battle-log"></div>
+    <div class="battle-close hidden">x</div>
   </section>
 
   <script type="module" src="script.js"></script>

@@ -6,6 +6,7 @@
 .body {
   position: relative;
   background-color:#f6f5f1;
+  overflow: hidden;
 }
 
 .flex {
@@ -52,54 +53,58 @@
   position: absolute;
 }
 
+.me *, .enemy * {
+  cursor: pointer;
+}
+
 .bag {
-  top: 7%;
-  left: 7%;
+  top: 8%;
+  left: 7.5%;
 }
 
 .cape {
   top: 8%;
-  right: 8%;
+  right: 7.5%;
 }
 
 .food {
-  top: 55%;
-  left: 7%;
+  top: 56%;
+  left: 7.5%;
 }
 
 .potion {
-  top: 55%;
-  right: 8%;
+  top: 56%;
+  right: 7.5%;
 }
 
 .mount {
-  top: 74%;
-  left: 39%;
+  top: 75%;
+  left: 39.5%;
 }
 
 .helmet {
   top: 10%;
-  left: 39%;
+  left: 39.5%;
 }
 
 .armor {
   top: 32%;
-  left: 39%;
+  left: 39.5%;
 }
 
 .boots {
   top: 53%;
-  left: 39%;
+  left: 39.5%;
 }
 
 .weapon {
-  top: 31%;
-  left: 12%;
+  top: 31.5%;
+  left: 13%;
 }
 
 .offhand {
-  top: 31%;
-  right: 12%;
+  top: 31.5%;
+  right: 13%;
 }
 
 .item {
@@ -110,10 +115,13 @@
   background-size: 120px 120px;
 }
 
-.selected {
-  border: 2px solid greenyellow;
+.me .selected {
+  box-shadow: rgb(55 230 23) 0px 22px 50px 4px;
 }
 
+.enemy .selected {
+  box-shadow: rgb(234 26 16) 0px 22px 50px 4px;
+}
 
 .login-form-wrapper {
   position: absolute;
@@ -164,9 +172,12 @@
 .item-stats {
   display: none;
   position: absolute;
-  width: 100px;
-  height: 100px;
-  background-color: yellow;
+  width: 160px;
+  height: 200px;
+  background-color: rgb(208 196 186);
+  padding: 10px;
+  opacity: 0.8;
+  z-index: 100;
 }
 
 .email, .password, .submit, .reg-email, .reg-password, .reg-submit, .reg-name {
@@ -200,6 +211,7 @@
 .main-content {
   height: 90vh;
   width: 100vw;
+  overflow: hidden;
 }
 
 .hero-wrapper {
@@ -224,6 +236,7 @@
 
 .inventory .item, .shop .item {
   margin: 5px;
+  cursor: pointer;
 }
 
 .shop {
@@ -241,6 +254,7 @@
 
 .update-shop {
   width: 200px;
+  cursor: pointer;
 }
 
 .shop .gold {
@@ -323,4 +337,46 @@
 .school-logo {
   height: 4vh;
   width: 5vw;
+}
+
+.battle-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+.battle-characters {
+  margin-bottom: 2vw;
+}
+
+.me-wrapper {
+  margin-right: 5vw;
+}
+
+.battle-log {
+  width: 50vw;
+  height: 20vh;
+  font-size: 16px;
+  overflow: auto;
+}
+
+.fight {
+  width: 12vw;
+  height: 4vh;
+  margin-bottom: 2vw;
+}
+
+.battle-close {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 100px;
+  border: 2px solid black;
+  cursor: pointer;
+  font-size: 36px;
+  text-align: center;
 }

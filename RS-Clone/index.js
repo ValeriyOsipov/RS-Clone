@@ -247,9 +247,9 @@ app.post('/api/user', (request, response) => {
 function addNewUser(email, password, name) {
     const newUser = {
         login: `${email}`, password: `${password}`, name: `${name}`,
-        equipment: [{bag:"BagTier1",cape:"CapeTier1",food:"SandwitchTier1",potion:"PoisonTier1",mount:"HorseTier1",helmet:"HelmetTier1",armor:"ArmorTier1",boots:"BootsTier1",weapon:"SwordTier1",offhand:"ShieldTier1"}],
-        inventory: [{name:"AxeTier1",slot:"weapon"}],
-        shop: [{name:"AxeTier1",slot:"weapon"},{name:"HelmetTier2",slot:"helmet"}],
+        equipment: [{bag:"BagTier4",cape:"CapeTier4",food:"SandwitchTier4",potion:"PoisonTier4",mount:"HorseTier4",helmet:"HelmetTier4",armor:"ArmorTier4",boots:"BootsTier4",weapon:"SwordTier4",offhand:"ShieldTier4"}],
+        inventory: [{name:"AxeTier4",slot:"weapon"}],
+        shop: [{name:"HealthPotionTier4",slot:"potion"}],
         gold: 100,
         progress: [0, 0, 0, 0, 0]
     }
@@ -300,11 +300,11 @@ app.post('/api/enemies', (request, response) => {
 })
 
 let rival = '';
-const rivalIndex = 5;
+let rivalIndex = 0;
 
 app.post('/api/pvp', (request, response) => {
-    enemyIndex = rivalIndex;
-    enemyEquipment = usersList[enemyIndex].equipment;
+    enemyIndex = 4;
+    enemyEquipment = usersList[rivalIndex].equipment;
     response.status(200).json(enemyEquipment);
 })
 
