@@ -320,7 +320,7 @@ function damageCalc(selectedTarget, enemyTarget, fighter1, fighter2) {
     if (selectedTarget === enemyTarget) {
         damage = 0;
     } else {
-        damage = fighter1.attackPower * (fighter1.accuracy / 100) * (fighter2.armor / 100);
+        damage = fighter1.attackPower * (fighter1.accuracy / 100) * (1 - fighter2.armor / 300);
     }
     return damage;
 }
