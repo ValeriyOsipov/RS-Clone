@@ -120,6 +120,7 @@ const battleLog = document.querySelector('.battle-log');
 const main = document.querySelector('.main-content');
 const header = document.querySelector('.menu-wrapper');
 const battleScreen = document.querySelector('.battle-screen');
+const battleStats = document.querySelectorAll('.winstats');
 
 //Отрисовка
 
@@ -168,6 +169,13 @@ function drawHeroStats(data) {
   document.querySelector('.character .luck').innerText = `Luck: ${data[0].luck}`;
   document.querySelector('.character .gold').innerText = `Gold: ${data[0].gold}`;
   document.querySelector('.shop .gold').innerText = `Gold: ${data[0].gold}`;
+}
+
+function drawProgress(data) {
+  let wins = [...battleStats];
+  for (let i = 0; i < wins.length; i += 1) {
+    wins[i].innerText = data[i];
+  }
 }
 
 function getPosition(e){
@@ -491,10 +499,12 @@ async function updateUI(name) {
   drawHeroStats(heroStats);
   inventory = await loadInventory();
   shop = await loadShop();
+  progress = await loadProgress();
   drawInventory(inventory);
   drawShop(inventory, shop);
   addInventoryClicks();
   addShopClicks();
+  drawProgress(progress);
   const loginScreen = document.querySelector('.login-form-wrapper');
   loginScreen.classList.add('hidden');
 }
@@ -537,8 +547,10 @@ async function loadBattle(enemyIndex, mode) {
       }
       if (status == 'win') {
         gold = await loadGold();
+        progress = await loadProgress();
         heroStats[0].gold = gold;
         drawHeroStats(heroStats);
+        drawProgress(progress);
         window.alert('You win and earn some gold!');
         fightButton.disabled = 'disabled';
         showCloseButton();

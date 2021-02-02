@@ -284,27 +284,49 @@
 }
 
 .pve-1 {
-  background-image: url('/assets/pve1.png');
   top: 30px;
   left: 30px;
 }
 
 .pve-2 {
-  background-image: url('/assets/pve2.png');
   top: 60px;
   right: 30px;
 }
 
 .pve-3 {
-  background-image: url('/assets/pve3.png');
   bottom: 120px;
   left: 60px;
 }
 
 .pve-4 {
-  background-image: url('/assets/pve4.png');
   bottom: 30px;
   right: 30px;
+}
+
+.pve-1-pic, .pve-1 {
+  background-image: url('/assets/pve1.png');
+}
+
+.pve-2-pic, .pve-2 {
+  background-image: url('/assets/pve2.png');
+}
+
+.pve-3-pic, .pve-3  {
+  background-image: url('/assets/pve3.png');
+}
+
+.pve-4-pic, .pve-4  {
+  background-image: url('/assets/pve4.png');
+}
+
+.pvp-pic {
+  background-image: url('/assets/pvp.png');
+  width: 70px;
+  height: 70px;
+  border-radius: 100%;
+  background-repeat: no-repeat;
+  background-size: 56px 56px;
+  background-position: center;
 }
 
 .pvp {
@@ -379,4 +401,22 @@
   cursor: pointer;
   font-size: 36px;
   text-align: center;
+}
+
+.winstats {
+  font-size: 20px;
+  text-align: center;
+}
+
+.pic {
+  width: 70px;
+  height: 70px;
+  border-radius: 100%;
+  background-repeat: no-repeat;
+  background-size: 110px 110px;
+  background-position: center;
+}
+
+.wins, .statistics {
+  align-self: center;
 }
