@@ -1,3 +1,5 @@
+//Работа с сервером
+
 async function request(url, method = 'GET', data = null) {
   const headers = {};
   let body;
@@ -12,6 +14,114 @@ async function request(url, method = 'GET', data = null) {
   })
   return await response.json();
 }
+
+async function loadEquipment() {
+  const data = await request('/api/equipment');
+  return data;
+}
+
+async function loadHeroStats() {
+  const data = await request('/api/heroStats');
+  return data;
+}
+
+async function loadEnemyStats() {
+  const data = await request('/api/enemyStats');
+  return data;
+}
+
+async function loadGearStats() {
+  const data = await request('/api/gearStats');
+  return data;
+}
+
+async function loadInventory() {
+  const data = await request('/api/inventory');
+  return data;
+}
+
+async function loadShop() {
+  const data = await request('/api/shop');
+  return data;
+}
+
+async function loadGold() {
+  const data = await request('/api/gold');
+  return data;
+}
+
+async function loadProgress() {
+  const data = await request('/api/progress');
+  return data;
+}
+
+async function regear(index) {
+  const newEquipment = await request('/api/equipment', 'POST', [index]);
+  return newEquipment;
+}
+
+async function buyItem(index) {
+  const newEquipment = await request('/api/shop', 'POST', [index]);
+  return newEquipment;
+}
+
+async function sellItem(index) {
+  const newEquipment = await request('/api/inventory', 'POST', [index]);
+  return newEquipment;
+}
+
+async function startRound(selectedTargets, i) {
+  const roundLog = await request('/api/battle', 'POST', [selectedTargets, i]);
+  return roundLog;
+}
+
+async function authFormHandler(event) {
+  event.preventDefault();
+  const email = document.querySelector('.email').value;
+  const password = document.querySelector('.password').value;
+  const loginDetails = await request('/api/user', 'POST', [email, password]);
+  if (loginDetails !== 'User with this email not found' && loginDetails !== 'Wrong password' && loginDetails !== undefined) {
+    await updateUI(loginDetails);
+  }
+}
+
+async function registerFormHandler(event) {
+  event.preventDefault();
+  const email = document.querySelector('.reg-email').value;
+  const password = document.querySelector('.reg-password').value;
+  const name = document.querySelector('.reg-name').value;
+  const regDetails = await request('/api/register', 'POST', [email, password, name]);
+  if (regDetails !== 'User with this email already exists' && regDetails !== undefined) {
+    alert('Account registered');
+  } else {
+    alert('User with this email already exists');
+  }
+}
+
+async function selectPveEnemyOnServer(index) {
+  const enemy = await request('/api/enemies', 'POST', [index]);
+  return enemy;
+}
+
+async function selectPvpEnemyOnServer(index) {
+  const enemy = await request('/api/pvp', 'POST', [index]);
+  return enemy;
+}
+
+async function updateRival() {
+  const data = await request('/api/rival');
+  return data;
+}
+
+//Элементы
+
+const itemStats = document.querySelector('.item-stats');
+const battleLog = document.querySelector('.battle-log');
+const main = document.querySelector('.main-content');
+const header = document.querySelector('.menu-wrapper');
+const battleScreen = document.querySelector('.battle-screen');
+
+//Отрисовка
 
 function drawEquipment(data) {
   document.querySelector('.hero .bag').style.backgroundImage = `url('/assets/${data[0].bag}.png')`;
@@ -59,33 +169,6 @@ function drawHeroStats(data) {
   document.querySelector('.character .gold').innerText = `Gold: ${data[0].gold}`;
   document.querySelector('.shop .gold').innerText = `Gold: ${data[0].gold}`;
 }
-
-function addRegisterClicks() {
-  const regLink = document.querySelector('.reg-link');
-  const regForm = document.querySelector('.register-form-wrapper');
-  const regClose = document.querySelector('.reg-close');
-  regLink.addEventListener('click', () => {
-    regForm.classList.remove('hidden');
-  })
-  regClose.addEventListener('click', () => {
-    regForm.classList.add('hidden');
-  })
-}
-
-function addMenuClicks() {
-  const menuItems = [...document.querySelectorAll('.menu-item')];
-  const tabs = [...document.querySelectorAll('.tab')];
-  for (let i = 0; i < menuItems.length; i += 1) {
-    menuItems[i].addEventListener('click', () => {
-      tabs.forEach(tab => tab.classList.add('hidden'));
-      menuItems.forEach(item => item.classList.remove('active-menu-item'));
-      tabs[i].classList.remove('hidden');
-      menuItems[i].classList.add('active-menu-item');
-    })
-  }
-}
-
-const itemStats = document.querySelector('.item-stats');
 
 function getPosition(e){
 	let x = 0;
@@ -144,20 +227,6 @@ function hideitemStats(item) {
   itemStats.innerText = '';
 }
 
-function addItemsHover() {
-  let items = document.querySelectorAll('.main-content .item');
-  for (let i = 0; i < items.length; i += 1) {
-    items[i].addEventListener('mouseover', function(e){
-      e.stopPropagation();
-      showItemStats(items[i], e);
-    });
-    items[i].addEventListener('mouseout', function(e){
-      e.stopPropagation();
-      hideitemStats(items[i]);
-    });
-  }
-}
-
 function clearInventory() {
   const inventoryWrap = document.querySelector('.inventory');
   while (inventoryWrap.firstChild) {
@@ -207,49 +276,83 @@ function drawShop(data1, data2) {
   addItemsHover();
 }
 
-async function loadEquipment() {
-  const data = await request('/api/equipment');
-  return data;
+async function updateShopUI() {
+  heroStats = await loadHeroStats();
+  gold = await loadGold();
+  heroStats[0].gold = gold;
+  drawHeroStats(heroStats);
+  inventory = await loadInventory();
+  drawInventory(inventory);
+  shop = await loadShop();
+  drawShop(inventory, shop);
+  addInventoryClicks();
+  addShopClicks();
 }
 
-async function loadHeroStats() {
-  const data = await request('/api/heroStats');
-  return data;
+function drawBattleHP(hpPools, maxHp) {
+  document.querySelector('.my-health').innerText = `My Health: ${hpPools[0]}/ ${maxHp[0]}`;
+  document.querySelector('.enemy-health').innerText = `Enemy Health: ${hpPools[1]}/ ${maxHp[1]}`;
 }
 
-async function loadEnemyStats() {
-  const data = await request('/api/enemyStats');
-  return data;
+function clearBattleLog() {
+  const battleLog = document.querySelector('.battle-log');
+  battleLog.innerText = '';
 }
 
-async function loadGearStats() {
-  const data = await request('/api/gearStats');
-  return data;
+function drawBattleLog(roundIndex, roundResult) {
+  battleLog.innerText += `${roundIndex}. You hit on ${roundResult[0]} damage, and take ${roundResult[1]} damage\n`;
 }
 
-async function loadInventory() {
-  const data = await request('/api/inventory');
-  return data;
+function showBattleScreen() {
+  main.classList.add('hidden');
+  header.classList.add('hidden');
+  battleScreen.classList.remove('hidden');
 }
 
-async function loadShop() {
-  const data = await request('/api/shop');
-  return data;
+function drawRival(data) {
+  const rivalCont = document.querySelector('.pvp');
+  rivalCont.innerText = `Your rival: ${data}`;
 }
 
-async function loadGold() {
-  const data = await request('/api/gold');
-  return data;
+//Ивент листенеры
+
+function addRegisterClicks() {
+  const regLink = document.querySelector('.reg-link');
+  const regForm = document.querySelector('.register-form-wrapper');
+  const regClose = document.querySelector('.reg-close');
+  regLink.addEventListener('click', () => {
+    regForm.classList.remove('hidden');
+  })
+  regClose.addEventListener('click', () => {
+    regForm.classList.add('hidden');
+  })
 }
 
-async function loadProgress() {
-  const data = await request('/api/progress');
-  return data;
+function addMenuClicks() {
+  const menuItems = [...document.querySelectorAll('.menu-item')];
+  const tabs = [...document.querySelectorAll('.tab')];
+  for (let i = 0; i < menuItems.length; i += 1) {
+    menuItems[i].addEventListener('click', () => {
+      tabs.forEach(tab => tab.classList.add('hidden'));
+      menuItems.forEach(item => item.classList.remove('active-menu-item'));
+      tabs[i].classList.remove('hidden');
+      menuItems[i].classList.add('active-menu-item');
+    })
+  }
 }
 
-async function regear(index) {
-  const newEquipment = await request('/api/equipment', 'POST', [index]);
-  return newEquipment;
+function addItemsHover() {
+  let items = document.querySelectorAll('.main-content .item');
+  for (let i = 0; i < items.length; i += 1) {
+    items[i].addEventListener('mouseover', function(e){
+      e.stopPropagation();
+      showItemStats(items[i], e);
+    });
+    items[i].addEventListener('mouseout', function(e){
+      e.stopPropagation();
+      hideitemStats(items[i]);
+    });
+  }
 }
 
 function addInventoryClicks() {
@@ -269,29 +372,6 @@ function addInventoryClicks() {
       addInventoryClicks();
     })
   }
-}
-
-async function buyItem(index) {
-  const newEquipment = await request('/api/shop', 'POST', [index]);
-  return newEquipment;
-}
-
-async function sellItem(index) {
-  const newEquipment = await request('/api/inventory', 'POST', [index]);
-  return newEquipment;
-}
-
-async function updateShopUI() {
-  heroStats = await loadHeroStats();
-  gold = await loadGold();
-  heroStats[0].gold = gold;
-  drawHeroStats(heroStats);
-  inventory = await loadInventory();
-  drawInventory(inventory);
-  shop = await loadShop();
-  drawShop(inventory, shop);
-  addInventoryClicks();
-  addShopClicks();
 }
 
 function addShopClicks() {
@@ -344,29 +424,9 @@ function addBattleClicks(character) {
   }
 }
 
-function drawBattleHP(hpPools, maxHp) {
-  document.querySelector('.my-health').innerText = `My Health: ${hpPools[0]}/ ${maxHp[0]}`;
-  document.querySelector('.enemy-health').innerText = `Enemy Health: ${hpPools[1]}/ ${maxHp[1]}`;
-}
-
-async function startRound(selectedTargets, i) {
-  const roundLog = await request('/api/battle', 'POST', [selectedTargets, i]);
-  return roundLog;
-}
-
 async function authFormSubmit() {
   document.querySelector('.login-form-wrapper')
     .addEventListener('submit', authFormHandler);
-}
-
-async function authFormHandler(event) {
-  event.preventDefault();
-  const email = document.querySelector('.email').value;
-  const password = document.querySelector('.password').value;
-  const loginDetails = await request('/api/user', 'POST', [email, password]);
-  if (loginDetails !== 'User with this email not found' && loginDetails !== 'Wrong password' && loginDetails !== undefined) {
-    await updateUI(loginDetails);
-  }
 }
 
 async function registerFormSubmit() {
@@ -374,18 +434,49 @@ async function registerFormSubmit() {
     .addEventListener('submit', registerFormHandler);
 }
 
-async function registerFormHandler(event) {
-  event.preventDefault();
-  const email = document.querySelector('.reg-email').value;
-  const password = document.querySelector('.reg-password').value;
-  const name = document.querySelector('.reg-name').value;
-  const regDetails = await request('/api/register', 'POST', [email, password, name]);
-  if (regDetails !== 'User with this email already exists' && regDetails !== undefined) {
-    alert('Account registered');
-  } else {
-    alert('User with this email already exists');
+function addPveSelect() {
+  const enemies = document.querySelectorAll('.pve');
+  const enemiesArray = [...enemies];
+  for (let i = 0; i < enemiesArray.length; i += 1) {
+    enemiesArray[i].addEventListener('click', () => {
+      loadBattle(i, 'pve');
+      showBattleScreen();
+    })
   }
 }
+
+function showCloseButton() {
+  const closeBattle = document.querySelector('.battle-close');
+  closeBattle.classList.remove('hidden');
+  closeBattle.addEventListener('click', () => {
+    closeBattle.classList.add('hidden');
+    main.classList.remove('hidden');
+    header.classList.remove('hidden');
+    battleScreen.classList.add('hidden');
+    battleLog.innerText='';
+  });
+}
+
+function addPvpSelect() {
+  const enemies = document.querySelectorAll('.pvp-fight');
+  const enemiesArray = [...enemies];
+  for (let i = 0; i < enemiesArray.length; i += 1) {
+    enemiesArray[i].addEventListener('click', () => {
+      loadBattle(i, 'pvp');
+      showBattleScreen();
+    })
+  }
+}
+
+function addRivalUpdateButton() {
+  const updButton = document.querySelector('.update-pvp');
+    updButton.addEventListener('click', async () => {
+      const rival = await updateRival();
+      drawRival(rival);
+    })
+}
+
+//Логика
 
 let equipment, heroStats, inventory, gold, shop, progress;
 
@@ -406,45 +497,6 @@ async function updateUI(name) {
   addShopClicks();
   const loginScreen = document.querySelector('.login-form-wrapper');
   loginScreen.classList.add('hidden');
-}
-
-function addPveSelect() {
-  const enemies = document.querySelectorAll('.pve');
-  const enemiesArray = [...enemies];
-  for (let i = 0; i < enemiesArray.length; i += 1) {
-    enemiesArray[i].addEventListener('click', () => {
-      loadBattle(i, 'pve');
-      showBattleScreen();
-    })
-  }
-}
-
-async function selectPveEnemyOnServer(index) {
-  const enemy = await request('/api/enemies', 'POST', [index]);
-  return enemy;
-}
-
-function clearBattleLog() {
-  const battleLog = document.querySelector('.battle-log');
-  battleLog.innerText = '';
-}
-
-const battleLog = document.querySelector('.battle-log');
-
-function drawBattleLog(roundIndex, roundResult) {
-  battleLog.innerText += `${roundIndex}. You hit on ${roundResult[0]} damage, and take ${roundResult[1]} damage\n`;
-}
-
-function showCloseButton() {
-  const closeBattle = document.querySelector('.battle-close');
-  closeBattle.classList.remove('hidden');
-  closeBattle.addEventListener('click', () => {
-    closeBattle.classList.add('hidden');
-    main.classList.remove('hidden');
-    header.classList.remove('hidden');
-    battleScreen.classList.add('hidden');
-    battleLog.innerText='';
-  });
 }
 
 async function loadBattle(enemyIndex, mode) {
@@ -495,50 +547,6 @@ async function loadBattle(enemyIndex, mode) {
   }
   addBattleClicks('me');
   addBattleClicks('enemy');
-}
-
-const main = document.querySelector('.main-content');
-const header = document.querySelector('.menu-wrapper');
-const battleScreen = document.querySelector('.battle-screen');
-
-function showBattleScreen() {
-  main.classList.add('hidden');
-  header.classList.add('hidden');
-  battleScreen.classList.remove('hidden');
-}
-
-function addPvpSelect() {
-  const enemies = document.querySelectorAll('.pvp-fight');
-  const enemiesArray = [...enemies];
-  for (let i = 0; i < enemiesArray.length; i += 1) {
-    enemiesArray[i].addEventListener('click', () => {
-      loadBattle(i, 'pvp');
-      showBattleScreen();
-    })
-  }
-}
-
-function addRivalUpdateButton() {
-  const updButton = document.querySelector('.update-pvp');
-    updButton.addEventListener('click', async () => {
-      const rival = await updateRival();
-      drawRival(rival);
-    })
-}
-
-async function selectPvpEnemyOnServer(index) {
-  const enemy = await request('/api/pvp', 'POST', [index]);
-  return enemy;
-}
-
-async function updateRival() {
-  const data = await request('/api/rival');
-  return data;
-}
-
-function drawRival(data) {
-  const rivalCont = document.querySelector('.pvp');
-  rivalCont.innerText = `Your rival: ${data}`;
 }
 
 let gearStats = [];
